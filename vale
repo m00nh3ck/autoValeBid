@@ -10,7 +10,7 @@ $valeLink ="https://www.whitehorsehomechoice.org.uk/Data/ASPPages/1/29.aspx";
 $nobidText = "Currently you are not eligible for any properties";
 
 #myVariables
-$okToBidText = "We can bind this week";
+$okToBidText = "We can bid this week";
 
 #mainProgram
 
@@ -39,6 +39,7 @@ $textMessage = "We can bid this week \n
 #find occurence of text on the page
 $pos = stripos($pagetext, $nobidText);
 
+#if there is no message displayed then there are houses for bid available
 if ($pos > 0 ){
     echo "Nothing to bid this week.\n";
 }else{
