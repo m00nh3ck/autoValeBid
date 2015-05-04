@@ -1,0 +1,53 @@
+#!/usr/bin/php
+<?php
+require_once __DIR__.'/vendor/autoload.php';
+require_once "config.inc";
+
+use Goutte\Client;
+
+#Default Values do not change
+$valeLink ="https://www.whitehorsehomechoice.org.uk/Data/ASPPages/1/29.aspx";
+$nobidText = "Currently you are not eligible for any properties";
+
+#myVariables
+$okToBidText = "We can bind this week";
+
+#mainProgram
+
+$client = new Client();
+$client->getClient()->setDefaultOption('config/curl/'.CURLOPT_TIMEOUT, 60);
+$crawler = $client->request('GET', $valeLink);
+$crawler = $client->click($crawler->selectLink('Login')->link());
+$form = $crawler->selectButton('Login')->form();
+$crawler = $client->submit($form, array(
+    'LoginReference' => $LOGIN,
+    'LoginPassword' => $PASSWORD,
+));
+
+$crawler->filter('div > class')->each(function ($node, $i) { } );
+$pagetext = $crawler->text();
+
+#Send an email only within this time and don't wake me up :)
+$start = "070000";
+$end = "210000";
+
+$textMessage = "We can bid this week \n
+        Login: ".$LOGIN."\n
+        Password: ".$PASSWORD."\n
+        Page: ".$valeLink."\n";
+
+#find occurence of text on the page
+$pos = stripos($pagetext, $nobidText);
+
+if ($pos > 0 ){
+    echo "Nothing to bid this week.\n";
+}else{
+    echo "We can bid this week";
+    $currentTime = date('His');
+
+    if($currentTime >= $start AND $currentTime <= $end){
+        mail($firstEmail,$okToBidText,$textMessage);
+        mail($secondEmail,$okToBidText,$textMessage);
+    }
+}
+
